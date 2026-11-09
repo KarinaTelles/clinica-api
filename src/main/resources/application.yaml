@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: clinica-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/clinica}
+    username: ${DB_USER:clinica}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  mvc:
+    problemdetails:
+      enabled: true
+
+app:
+  fuso-horario: America/Sao_Paulo
+  jwt:
+    # Sem valor padrão de propósito: a aplicação não sobe sem JWT_SECRET.
+    secret: ${JWT_SECRET:}
+    validade: 2h
+  seed:
+    login: ${DEV_USER_LOGIN:}
+    senha: ${DEV_USER_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
