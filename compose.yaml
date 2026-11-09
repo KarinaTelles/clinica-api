@@ -1,0 +1,37 @@
+# Sobe a API e o PostgreSQL para desenvolvimento local.
+# As variáveis vêm do arquivo .env (veja .env.example); nada sensível fica aqui.
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: clinica
+      POSTGRES_USER: clinica
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - dados-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinica -d clinica"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/clinica
+      DB_USER: clinica
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
+      DEV_USER_LOGIN: ${DEV_USER_LOGIN:-}
+      DEV_USER_PASSWORD: ${DEV_USER_PASSWORD:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  dados-postgres:
